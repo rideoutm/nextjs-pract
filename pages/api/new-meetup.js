@@ -2,14 +2,14 @@
 import { MongoClient } from "mongodb";
 
 async function handler(req, res) {
-  if (req.method === "post") {
+  if (req.method === "POST") {
     const data = req.body;
-    const { title, image, address, description } = data;
+    // const { title, image, address, description } = data;
 
     const client = await MongoClient.connect(
-      "mongodb+srv://nextjsstuff:eNDX7ZUyBp0gtf2t@cluster0.jfaag30.mongodb.net/test"
+      "mongodb+srv://nextjsstuff:UhEjfpci3BY92ZOQ@cluster0.jfaag30.mongodb.net/?retryWrites=true&w=majority"
     );
-
+    const db = client.db();
     const meetupsCollection = db.collection("meetups");
     const result = await meetupsCollection.insertOne(data);
 

@@ -1,16 +1,13 @@
 import React from "react";
 import styles from "./meetupdetails.module.css";
 
-export default function MeetupDetails() {
+export default function MeetupDetails({ image, title, address, description }) {
   return (
     <section className={styles.details}>
-      <img
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Toronto_Skyline_Summer_2020.jpg/1200px-Toronto_Skyline_Summer_2020.jpg"
-        alt="first meet"
-      />
-      <h1>first meet up</h1>
-      <address>1234 some st.</address>
-      <p>Meetup Description</p>
+      <img src={image} alt={title} />
+      <h1>{title}</h1>
+      <address>{address}</address>
+      <p>{description}</p>
     </section>
   );
 }
@@ -42,7 +39,7 @@ export async function getStaticProps(context) {
       meetupData: {
         image:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Toronto_Skyline_Summer_2020.jpg/1200px-Toronto_Skyline_Summer_2020.jpg",
-        id: "m1",
+        id: meetupId,
         title: "1st meet up",
         address: "123 meet st",
         description: "first meet up",
