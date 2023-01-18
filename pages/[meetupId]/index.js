@@ -1,48 +1,54 @@
 import React from "react";
 import styles from "./meetupdetails.module.css";
+import { MongoClient, ObjectId } from "mongodb";
 
-export default function MeetupDetails({ image, title, address, description }) {
+export default function MeetupDetails(props) {
   return (
     <section className={styles.details}>
-      <img src={image} alt={title} />
-      <h1>{title}</h1>
-      <address>{address}</address>
-      <p>{description}</p>
+      <img src={props.meetupData.image} alt={props.meetupData.title} />
+      <h1>{props.meetupData.title}</h1>
+      <address>{props.meetupData.address}</address>
+      <p>{props.meetupData.description}</p>
     </section>
   );
 }
 
 export async function getStaticPaths() {
+  const client = await MongoClient.connect(
+    "mongodb+srv://nextjsstuff:UhEjfpci3BY92ZOQ@cluster0.jfaag30.mongodb.net/?retryWrites=true&w=majority"
+  );
+  const db = client.db();
+  const meetupsCollection = db.collection("meetups");
+
+  const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+
+  client.close();
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "m1",
-        },
-      },
-      {
-        params: {
-          meetupId: "m2",
-        },
-      },
-    ],
+    paths: meetups.map((meetup) => ({ params: { meetupId: meetup._id.toString() } })),
   };
 }
 
 export async function getStaticProps(context) {
   const meetupId = context.params.meetupId;
 
-  console.log(meetupId);
+  const client = await MongoClient.connect(
+    "mongodb+srv://nextjsstuff:UhEjfpci3BY92ZOQ@cluster0.jfaag30.mongodb.net/?retryWrites=true&w=majority"
+  );
+  const db = client.db();
+  const meetupsCollection = db.collection("meetups");
+
+  const selectedMeetup = await meetupsCollection.findOne({ _id: ObjectId(meetupId) });
+
+  client.close();
   return {
     props: {
       meetupData: {
-        image:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Toronto_Skyline_Summer_2020.jpg/1200px-Toronto_Skyline_Summer_2020.jpg",
-        id: meetupId,
-        title: "1st meet up",
-        address: "123 meet st",
-        description: "first meet up",
+        id: selectedMeetup._id.toString(),
+        title: selectedMeetup.title,
+        address: selectedMeetup.address,
+        image: selectedMeetup.image,
+        description: selectedMeetup.description,
       },
     },
   };
